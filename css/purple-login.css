@@ -1,0 +1,50 @@
+body.login-page .login-form .form-group .input-group {
+  border-color: #303641;
+}
+body.login-page {
+  background: #3d4652;
+}
+body.login-page .login-form .form-group .input-group .form-control::-webkit-input-placeholder {
+  color: #e6e0f0;
+}
+body.login-page .login-form .form-group .input-group .form-control:-moz-placeholder {
+  color: #e6e0f0;
+}
+body.login-page .login-form .form-group .input-group .form-control::-moz-placeholder {
+  color: #e6e0f0;
+}
+body.login-page .login-form .form-group .input-group .form-control:-ms-input-placeholder {
+  color: #e6e0f0;
+}
+body.login-page .login-form .form-group .input-group {
+  background: #626e84;
+  border-color: #000000;
+}
+body.login-page .login-form .form-group .input-group.focused {
+  border-color: #303641;
+}
+body.login-page .login-form .form-group .input-group .input-group-addon:after {
+  background: #1a0e25;
+}
+body.login-page .login-form .form-group .btn-login {
+  background: #373e4a;
+  border-color: #000000;
+}
+body.login-page .login-form .form-group .btn-login:hover {
+  background: #303641;
+}
+body .login-container .login-header {
+  background-color: #303641;
+}
+body .login-container .login-header.login-caret:after {
+  border-top-color: #303641;
+}
+body.login-page.logging-in .login-progressbar {
+  background: #303641;
+  height: 2px;
+}
+body.login-page.logging-in .login-progressbar div {
+  background: #3c3cff;
+}
+
+.input-group-addon > i { color:#000;}
