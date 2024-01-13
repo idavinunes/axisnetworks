@@ -5,6 +5,8 @@ INSTALAÇÂO ISSABEL
 
 centos 7 netstall
 
+yum update
+
 yum -y install wget
 
 
