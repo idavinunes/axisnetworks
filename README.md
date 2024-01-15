@@ -21,6 +21,9 @@ wget -O - https://raw.githubusercontent.com/daviguitarra20/axisnetworks/main/tem
 para tradução automatica 
 
 wget -O - https://github.com/ibinetwork/IssabelBR/raw/master/patch-issabelbr.sh | bash
+
+
+
 INSTALAÇÃO FREEPBX
 
 yum install wget -y; wget -O - https://raw.githubusercontent.com/ibinetwork/freepbx_install/master/freepbx14_centos7_install.sh | bash
