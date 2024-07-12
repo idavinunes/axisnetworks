@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Nome do script: deploy_project.sh
-
 # Função para verificar a existência do Docker e Docker Compose, e instalar se necessário
 check_and_install_docker() {
     if ! command -v docker &> /dev/null
@@ -155,12 +153,23 @@ EOL
 # Verificar e instalar Docker e Docker Compose, se necessário
 check_and_install_docker
 
-# Criar rede e volumes, se não existirem
-docker network inspect minha_rede >/dev/null 2>&1 || docker network create minha_rede
-docker volume inspect chatwoot_data >/dev/null 2>&1 || docker volume create chatwoot_data
-docker volume inspect chatwoot_public >/dev/null 2>&1 || docker volume create chatwoot_public
-docker volume inspect redis_data >/dev/null 2>&1 || docker volume create redis_data
-docker volume inspect postgres_data >/dev/null 2>&1 || docker volume create postgres_data
+# Criar rede, se não existir
+if ! docker network inspect minha_rede >/dev/null 2>&1; then
+    echo "Criando a rede minha_rede..."
+    docker network create minha_rede
+else
+    echo "A rede minha_rede já existe. Prosseguindo..."
+fi
+
+# Criar volumes, se não existirem
+for volume in chatwoot_data chatwoot_public redis_data postgres_data; do
+    if ! docker volume inspect $volume >/dev/null 2>&1; then
+        echo "Criando o volume $volume..."
+        docker volume create $volume
+    else
+        echo "O volume $volume já existe. Prosseguindo..."
+    fi
+done
 
 # Executar o comando docker-compose up -d
 docker-compose up -d
