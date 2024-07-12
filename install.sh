@@ -25,6 +25,7 @@ check_and_install_docker() {
 sanitize_project_name() {
     local project_name=$1
     sanitized_name=$(echo "$project_name" | tr -cs '[:alnum:]-_' '_')
+    sanitized_name=$(echo "$sanitized_name" | sed 's/_$//')  # Remove o underscore final, se existir
     echo "$sanitized_name"
 }
 
