@@ -26,6 +26,8 @@ read -p "Informe o nome do projeto: " PROJECT_NAME
 
 # Criar uma pasta com o nome do projeto
 mkdir -p $PROJECT_NAME
+
+# Entrar na pasta do projeto
 cd $PROJECT_NAME
 
 # Criar o arquivo docker-compose.yml com o conteúdo fornecido
