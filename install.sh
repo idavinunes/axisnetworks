@@ -2,8 +2,7 @@
 
 # Função para verificar se o Docker está instalado
 function check_docker {
-  if ! command -v docker &> /dev/null
-  then
+  if ! command -v docker &> /dev/null; then
     echo "Docker não está instalado. Instalando Docker..."
     install_docker
   else
@@ -25,7 +24,7 @@ function check_docker_version {
   local required_version="20.10.0"
   local installed_version=$(docker --version | awk -F '[ ,]+' '{ print $3 }')
   
-  if [ "$(printf '%s\n' "$required_version" "$installed_version" | sort -V | head -n1)" != "$required_version" ]; then 
+  if dpkg --compare-versions "$installed_version" "lt" "$required_version"; then 
     echo "Docker está desatualizado. Versão instalada: $installed_version. Versão necessária: $required_version."
     read -p "Deseja atualizar o Docker? (s/n): " update_docker
     if [ "$update_docker" == "s" ]; then
@@ -38,8 +37,7 @@ function check_docker_version {
 
 # Função para verificar se o Docker Compose está instalado
 function check_docker_compose {
-  if ! command -v docker-compose &> /dev/null
-  then
+  if ! command -v docker-compose &> /dev/null; then
     echo "Docker Compose não está instalado. Instalando Docker Compose..."
     install_docker_compose
   else
@@ -69,8 +67,8 @@ read -p "Digite o email do remetente para o servidor de email Gmail (ex: scantec
 read -p "Digite a senha do email do remetente para o servidor de email Gmail: " SMTP_PASSWORD
 
 # Criar diretório do projeto
-mkdir -p $PROJECT_NAME
-cd $PROJECT_NAME
+mkdir -p "$PROJECT_NAME"
+cd "$PROJECT_NAME" || exit
 
 # Criar arquivo docker-compose.yml
 cat <<EOF > docker-compose.yml
@@ -82,8 +80,8 @@ services:
     command: bundle exec rails s -p 3000 -b 0.0.0.0
     entrypoint: docker/entrypoints/rails.sh
     volumes:
-      - chatwoot_data_${PROJECT_NAME}:/app/storage 
-      - chatwoot_public_${PROJECT_NAME}:/app 
+      - "chatwoot_data_${PROJECT_NAME}:/app/storage" 
+      - "chatwoot_public_${PROJECT_NAME}:/app"
     networks:
       - minha_rede
     environment:
@@ -92,7 +90,7 @@ services:
       - RAILS_ENV=production
       - INSTALLATION_ENV=docker
       - SECRET_KEY_BASE=$(openssl rand -hex 64)
-      - FRONTEND_URL=$FRONTEND_URL
+      - FRONTEND_URL="$FRONTEND_URL"
       - DEFAULT_LOCALE=pt_BR
       - FORCE_SSL=true
       - ENABLE_ACCOUNT_SIGNUP=false
@@ -105,16 +103,16 @@ services:
       - RAILS_LOG_TO_STDOUT=true
       - USE_INBOX_AVATAR_FOR_BOT=true
       # Servidor de Email Gmail
-      - MAILER_SENDER_EMAIL=Chatwoot <$MAILER_SENDER_EMAIL>
-      - SMTP_DOMAIN=$SMTP_DOMAIN
-      - SMTP_ADDRESS=$SMTP_ADDRESS
-      - SMTP_PORT=$SMTP_PORT
-      - SMTP_USERNAME=$MAILER_SENDER_EMAIL
-      - SMTP_PASSWORD=$SMTP_PASSWORD
+      - MAILER_SENDER_EMAIL="Chatwoot <$MAILER_SENDER_EMAIL>"
+      - SMTP_DOMAIN="$SMTP_DOMAIN"
+      - SMTP_ADDRESS="$SMTP_ADDRESS"
+      - SMTP_PORT="$SMTP_PORT"
+      - SMTP_USERNAME="$MAILER_SENDER_EMAIL"
+      - SMTP_PASSWORD="$SMTP_PASSWORD"
       - SMTP_AUTHENTICATION=login
       - SMTP_ENABLE_STARTTLS_AUTO=true
       - SMTP_OPENSSL_VERIFY_MODE=peer
-      - MAILER_INBOUND_EMAIL_DOMAIN=$MAILER_SENDER_EMAIL
+      - MAILER_INBOUND_EMAIL_DOMAIN="$MAILER_SENDER_EMAIL"
     ports:
       - "3000:3000"
 
@@ -122,8 +120,8 @@ services:
     image: sendingtk/chatwoot:v3.7.0
     command: bundle exec sidekiq -C config/sidekiq.yml
     volumes:
-      - chatwoot_data_${PROJECT_NAME}:/app/storage
-      - chatwoot_public_${PROJECT_NAME}:/app
+      - "chatwoot_data_${PROJECT_NAME}:/app/storage"
+      - "chatwoot_public_${PROJECT_NAME}:/app"
     networks:
       - minha_rede
     environment:
@@ -132,7 +130,7 @@ services:
       - RAILS_ENV=production
       - INSTALLATION_ENV=docker
       - SECRET_KEY_BASE=$(openssl rand -hex 64)
-      - FRONTEND_URL=$FRONTEND_URL
+      - FRONTEND_URL="$FRONTEND_URL"
       - DEFAULT_LOCALE=pt_BR
       - FORCE_SSL=true
       - ENABLE_ACCOUNT_SIGNUP=false
@@ -145,21 +143,21 @@ services:
       - RAILS_LOG_TO_STDOUT=true
       - USE_INBOX_AVATAR_FOR_BOT=true
       # Servidor de Email Gmail
-      - MAILER_SENDER_EMAIL=Chatwoot <$MAILER_SENDER_EMAIL>
-      - SMTP_DOMAIN=$SMTP_DOMAIN
-      - SMTP_ADDRESS=$SMTP_ADDRESS
-      - SMTP_PORT=$SMTP_PORT
-      - SMTP_USERNAME=$MAILER_SENDER_EMAIL
-      - SMTP_PASSWORD=$SMTP_PASSWORD
+      - MAILER_SENDER_EMAIL="Chatwoot <$MAILER_SENDER_EMAIL>"
+      - SMTP_DOMAIN="$SMTP_DOMAIN"
+      - SMTP_ADDRESS="$SMTP_ADDRESS"
+      - SMTP_PORT="$SMTP_PORT"
+      - SMTP_USERNAME="$MAILER_SENDER_EMAIL"
+      - SMTP_PASSWORD="$SMTP_PASSWORD"
       - SMTP_AUTHENTICATION=login
       - SMTP_ENABLE_STARTTLS_AUTO=true
       - SMTP_OPENSSL_VERIFY_MODE=peer
-      - MAILER_INBOUND_EMAIL_DOMAIN=$MAILER_SENDER_EMAIL
+      - MAILER_INBOUND_EMAIL_DOMAIN="$MAILER_SENDER_EMAIL"
 
   redis:
     image: redis:6.0
     volumes:
-      - redis_data_${PROJECT_NAME}:/data
+      - "redis_data_${PROJECT_NAME}:/data"
     networks:
       - minha_rede
 
@@ -170,7 +168,7 @@ services:
       POSTGRES_USER=postgres
       POSTGRES_PASSWORD=AdminAdmin
     volumes:
-      - postgres_data_${PROJECT_NAME}:/var/lib/postgresql/data
+      - "postgres_data_${PROJECT_NAME}:/var/lib/postgresql/data"
     networks:
       - minha_rede
 
@@ -186,8 +184,8 @@ networks:
     name: minha_rede
 EOF
 
-# Criar a rede Docker
-docker network create minha_rede
+# Criar a rede Docker se não existir
+docker network create minha_rede &> /dev/null || true
 
 # Criar os volumes Docker
 docker volume create chatwoot_data_${PROJECT_NAME}
