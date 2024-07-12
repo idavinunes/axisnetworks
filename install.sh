@@ -64,7 +64,8 @@ read -p "Digite o domínio do SMTP (ex: gmail.com): " SMTP_DOMAIN
 read -p "Digite o endereço do SMTP (ex: smtp.gmail.com): " SMTP_ADDRESS
 read -p "Digite a porta do SMTP (ex: 587): " SMTP_PORT
 read -p "Digite o email do remetente para o servidor de email Gmail (ex: scantechrio@gmail.com): " MAILER_SENDER_EMAIL
-read -p "Digite a senha do email do remetente para o servidor de email Gmail: " SMTP_PASSWORD
+read -s -p "Digite a senha do email do remetente para o servidor de email Gmail: " SMTP_PASSWORD
+echo ""
 
 # Criar diretório do projeto
 mkdir -p "$PROJECT_NAME"
@@ -80,7 +81,7 @@ services:
     command: bundle exec rails s -p 3000 -b 0.0.0.0
     entrypoint: docker/entrypoints/rails.sh
     volumes:
-      - "chatwoot_data_${PROJECT_NAME}:/app/storage" 
+      - "chatwoot_data_${PROJECT_NAME}:/app/storage"
       - "chatwoot_public_${PROJECT_NAME}:/app"
     networks:
       - minha_rede
@@ -188,10 +189,10 @@ EOF
 docker network create minha_rede &> /dev/null || true
 
 # Criar os volumes Docker
-docker volume create chatwoot_data_${PROJECT_NAME}
-docker volume create chatwoot_public_${PROJECT_NAME}
-docker volume create redis_data_${PROJECT_NAME}
-docker volume create postgres_data_${PROJECT_NAME}
+docker volume create chatwoot_data_${PROJECT_NAME} &> /dev/null || true
+docker volume create chatwoot_public_${PROJECT_NAME} &> /dev/null || true
+docker volume create redis_data_${PROJECT_NAME} &> /dev/null || true
+docker volume create postgres_data_${PROJECT_NAME} &> /dev/null || true
 
 # Executar o Docker Compose
 docker-compose up -d
