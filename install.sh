@@ -21,14 +21,22 @@ check_and_install_docker() {
     fi
 }
 
-# Solicitar o nome do projeto ao usuário
-read -p "Informe o nome do projeto: " PROJECT_NAME
+# Verificar se o nome do projeto foi fornecido como argumento
+if [ -z "$1" ]; then
+    echo "Uso: $0 <nome_do_projeto>"
+    exit 1
+fi
+
+PROJECT_NAME=$1
+
+# Substituir caracteres inválidos no nome do projeto
+PROJECT_NAME_SANITIZED=$(echo "$PROJECT_NAME" | tr -c '[:alnum:]_- ' '_')
 
 # Criar uma pasta com o nome do projeto
-mkdir -p $PROJECT_NAME
+mkdir -p "$PROJECT_NAME_SANITIZED"
 
 # Entrar na pasta do projeto
-cd $PROJECT_NAME
+cd "$PROJECT_NAME_SANITIZED"
 
 # Criar o arquivo docker-compose.yml com o conteúdo fornecido
 cat <<EOL > docker-compose.yml
