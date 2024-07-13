@@ -64,7 +64,7 @@ DEFAULT_LOCALE=$(ask_env_variable "DEFAULT_LOCALE" "pt_BR")
 FORCE_SSL=$(ask_env_variable "FORCE_SSL" "true")
 ENABLE_ACCOUNT_SIGNUP=$(ask_env_variable "ENABLE_ACCOUNT_SIGNUP" "false")
 REDIS_URL=$(ask_env_variable "REDIS_URL" "redis://redis:6379")
-POSTGRES_HOST=$(ask_env_variable "POSTGRES_HOST" "postgres")
+POSTGRES_HOST=$(ask_env_variable "POSTGRES_HOST" "endereco_do_servidor_postgres_externo")
 POSTGRES_USERNAME=$(ask_env_variable "POSTGRES_USERNAME" "postgres")
 POSTGRES_PASSWORD=$(ask_env_variable "POSTGRES_PASSWORD" "AdminAdmin")
 POSTGRES_DATABASE=$(ask_env_variable "POSTGRES_DATABASE" "chatwoot")
@@ -100,8 +100,7 @@ services:
     command: bundle exec rails s -p 3000 -b 0.0.0.0
     entrypoint: docker/entrypoints/rails.sh
     volumes:
-      - chatwoot_data:/app/storage 
-      - chatwoot_public:/app 
+      - chatwoot_data:/app/storage
     networks:
       - minha_rede
     environment:
@@ -140,7 +139,6 @@ services:
     command: bundle exec sidekiq -C config/sidekiq.yml
     volumes:
       - chatwoot_data:/app/storage
-      - chatwoot_public:/app
     networks:
       - minha_rede
     environment:
@@ -179,22 +177,9 @@ services:
     networks:
       - minha_rede
 
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: "$POSTGRES_DATABASE"
-      POSTGRES_USER: "$POSTGRES_USERNAME"
-      POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - minha_rede
-
 volumes:
   chatwoot_data:
-  chatwoot_public:
   redis_data:
-  postgres_data:
 
 networks:
   minha_rede:
@@ -214,7 +199,7 @@ else
 fi
 
 # Criar volumes, se não existirem
-for volume in chatwoot_data chatwoot_public redis_data postgres_data; do
+for volume in chatwoot_data redis_data; do
     if ! docker volume inspect $volume >/dev/null 2>&1; then
         echo "Criando o volume $volume..."
         docker volume create $volume
