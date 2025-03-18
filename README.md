@@ -5,6 +5,10 @@ INSTALAÇÂO ISSABEL
 
 centos 7 netstall
 
+correção atualização
+https://almalinux.org/blog/2024-07-09-centos7-updates/
+
+
 yum update
 
 yum -y install wget
